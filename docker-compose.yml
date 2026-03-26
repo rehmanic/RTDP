@@ -1,0 +1,66 @@
+services:
+  # ── Redis ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:8-alpine
+    container_name: rtdp-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - rtdp-network
+
+  # ── Pulse: Python Weather Data Publisher ──────────────────────────────────
+  pulse:
+    build:
+      context: ./pulse
+      dockerfile: Dockerfile
+    container_name: rtdp-pulse
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - rtdp-network
+
+  # ── Relay: Node.js WebSocket Broker ──────────────────────────────────────
+  relay:
+    build:
+      context: ./relay
+      dockerfile: Dockerfile
+    container_name: rtdp-relay
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT}:3001"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - rtdp-network
+
+  # ── Radar: Next.js Frontend Dashboard ────────────────────────────────────
+  radar:
+    build:
+      context: ./radar
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: "http://localhost:${BACKEND_PORT}"
+    container_name: rtdp-radar
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    depends_on:
+      - relay
+    networks:
+      - rtdp-network
+
+  # ── Common Network ────────────────────────────────────
+networks:
+  rtdp-network:
+    driver: bridge
