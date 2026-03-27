@@ -22,9 +22,21 @@ A containerized real-time weather data pipeline with live dashboard visualizatio
    cp .env.example .env
    ```
 
-2. Launch the entire stack:
+2. Launch the entire stack (Standard Mode):
    ```bash
    docker compose up --build
+   ```
+
+   **Or launch in Development Mode (Live Hot-Reloading):**
+   ```bash
+   docker compose watch
+   ```
+   *(Use `watch` if you are actively editing the code. Any changes saved to `src/` or `app/` folders will automatically hot-reload the containers without needing a rebuild!)*
+
+   **To view logs while using `watch`:**
+   Open a separate terminal and run:
+   ```bash
+   docker compose logs -f
    ```
 
 3. Open your browser and go to:
