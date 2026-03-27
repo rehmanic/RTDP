@@ -10,7 +10,7 @@ import redis
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 CHANNEL = "weather-updates"
-CITIES = ["New York", "London", "Tokyo", "Paris", "Sydney", "Dubai", "Toronto", "Berlin", "Mumbai", "Seoul"]
+CITIES = ["New York", "London", "Tokyo", "Paris", "Sydney", "Dubai", "Toronto", "Berlin", "Mumbai", "Seoul", "Islamabad", "Lahore", "Karachi", "Peshawar"]
 log_queue = queue.Queue()
 
 
